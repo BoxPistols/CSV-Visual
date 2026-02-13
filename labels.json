@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "labels": [
     {
-      "name": "bug",
+      "name": "バグ",
       "color": "d73a4a",
       "description": "バグ報告"
     },
@@ -10,11 +10,6 @@
       "name": "feature",
       "color": "a2eeef",
       "description": "新機能の追加"
-    },
-    {
-      "name": "enhancement",
-      "color": "84b6eb",
-      "description": "既存機能の改善"
     },
     {
       "name": "docs",
@@ -62,14 +57,14 @@
       "description": "優先度: 低"
     },
     {
-      "name": "wontfix",
-      "color": "eeeeee",
-      "description": "対応しない"
+      "name": "重複",
+      "color": "cfd3d7",
+      "description": "既に報告済みの内容"
     },
     {
-      "name": "duplicate",
-      "color": "cfd3d7",
-      "description": "重複"
+      "name": "対応しない",
+      "color": "eeeeee",
+      "description": "対応を見送る"
     }
   ]
 }
