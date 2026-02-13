@@ -7,27 +7,27 @@
       "description": "バグ報告"
     },
     {
-      "name": "feature",
+      "name": "新機能",
       "color": "a2eeef",
       "description": "新機能の追加"
     },
     {
-      "name": "docs",
+      "name": "ドキュメント",
       "color": "0075ca",
       "description": "ドキュメントの追加・修正"
     },
     {
-      "name": "refactor",
+      "name": "リファクタリング",
       "color": "d4c5f9",
       "description": "リファクタリング"
     },
     {
-      "name": "test",
+      "name": "テスト",
       "color": "bfd4f2",
       "description": "テストの追加・修正"
     },
     {
-      "name": "chore",
+      "name": "設定・依存",
       "color": "fef2c0",
       "description": "ビルド・設定・依存関係の変更"
     },
