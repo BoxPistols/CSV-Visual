@@ -135,14 +135,90 @@ const parseCsv = (text) => {
   return { h, rows };
 };
 
-/* ── CellValue ── */
-function CellValue({ value }) {
+/* ── Image URL detection ── */
+const IMG_EXT_RE = /\.(jpe?g|png|gif|webp|svg|bmp|ico|avif)(\?.*)?$/i;
+const IMG_HOST_RE = /pbs\.twimg\.com|instagram\..+\/p\/|i\.imgur\.com|images\.unsplash\.com|cdn\.discordapp\.com/;
+function isImageUrl(url) {
+  try { return IMG_EXT_RE.test(url) || IMG_HOST_RE.test(url); } catch { return false; }
+}
+
+/* ── URL Hover Preview ── */
+function LinkWithPreview({ href, children }) {
+  const [show, setShow] = useState(false);
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const timer = useRef(null);
+  const isImg = isImageUrl(href);
+
+  const onEnter = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setPos({ x: rect.left, y: rect.bottom + 4 });
+    timer.current = setTimeout(() => setShow(true), 400);
+  };
+  const onLeave = () => {
+    clearTimeout(timer.current);
+    setShow(false);
+  };
+
+  return (
+    <span style={{ position: 'relative', display: 'inline' }}
+      onMouseEnter={onEnter} onMouseLeave={onLeave}>
+      <a href={href} target="_blank" rel="noopener noreferrer"
+        style={{ color: '#4f46e5', textDecoration: 'underline' }}>{children}</a>
+      {show && (
+        <div style={{
+          position: 'fixed', left: Math.min(pos.x, window.innerWidth - 340), top: pos.y,
+          zIndex: 9999, background: '#fff', border: '1px solid #e5e7eb', borderRadius: 8,
+          boxShadow: '0 8px 24px rgba(0,0,0,.15)', overflow: 'hidden',
+          width: isImg ? 'auto' : 320, maxWidth: 400, maxHeight: 280,
+        }}>
+          {isImg ? (
+            <img src={href} alt="" style={{ maxWidth: 380, maxHeight: 260, display: 'block', borderRadius: 6 }}
+              onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+          ) : (
+            <div style={{ padding: 10, fontSize: 11, color: '#6b7280' }}>
+              <div style={{ fontWeight: 600, marginBottom: 4, color: '#374151', wordBreak: 'break-all', fontSize: 12 }}>{href}</div>
+              <div style={{ color: '#9ca3af' }}>{isJa ? '新しいタブで開く →' : 'Open in new tab →'}</div>
+            </div>
+          )}
+        </div>
+      )}
+    </span>
+  );
+}
+
+/* ── CellValue (image thumbnail + URL preview) ── */
+function CellValue({ value, colKey }) {
   const s = String(value ?? '');
   const re = /(https?:\/\/[^\s,)"'<>]+)/;
+
+  // Multiple URLs separated by spaces (e.g. media URLs)
+  const urls = s.match(new RegExp(re.source, 'g'));
+
+  // If all content is image URLs, render as thumbnail gallery
+  if (urls && urls.length > 0 && urls.every(u => isImageUrl(u))) {
+    return (
+      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+        {urls.map((url, i) => (
+          <a key={i} href={url} target="_blank" rel="noopener noreferrer">
+            <img src={url} alt="" style={{
+              width: 40, height: 40, objectFit: 'cover', borderRadius: 4,
+              border: '1px solid #e5e7eb', cursor: 'pointer',
+              transition: 'transform 0.15s',
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.transform = 'scale(2.5)'; e.currentTarget.style.zIndex = '100'; e.currentTarget.style.position = 'relative'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = ''; e.currentTarget.style.zIndex = ''; e.currentTarget.style.position = ''; }}
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+            />
+          </a>
+        ))}
+      </div>
+    );
+  }
+
   if (!re.test(s)) return s;
+
   return (<span>{s.split(re).map((part, i) =>
-    re.test(part) ? <a key={i} href={part} target="_blank" rel="noopener noreferrer"
-      style={{ color: '#4f46e5', textDecoration: 'underline' }}>{part}</a> : part
+    re.test(part) ? <LinkWithPreview key={i} href={part}>{part}</LinkWithPreview> : part
   )}</span>);
 }
 
@@ -628,33 +704,33 @@ export default function App() {
                   onLoad={handleLoadDataset} onRowAdd={handleRowAdd} />
               </div>
 
-              {/* File info */}
-              {fileInfo && (
-                <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, color: '#6b7280' }}>
-                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px',
-                    borderRadius: 99, background: '#e0e7ff', color: '#4338ca', fontWeight: 500 }}>
-                    {fileInfo.type === 'JSON' ? <FileJson size={14} /> : <FileText size={14} />}{fileInfo.type}
-                  </span>
-                  <span>{fileInfo.name}</span><span>&bull;</span>
-                  <span>{allRows.length.toLocaleString(locale)} {t('rows')} &times; {headers.length} {t('columns')}</span>
-                </div>
-              )}
-
-              {/* Preview with CRUD */}
-              {allRows.length > 0 && (
-                <div style={{ marginTop: 24 }}>
-                  <h2 style={{ fontSize: 13, fontWeight: 600, color: '#4b5563', marginBottom: 8,
-                    display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <FileText size={16} />{t('dataPreviewTitle')}
-                  </h2>
-                  <DataTable headers={headers} rows={allRows} isArrayRows={false}
-                    onEditRow={(info) => setEditModal(info)}
-                    onDeleteRow={(idx) => handleRowDelete(idx)} />
-                </div>
-              )}
             </div>
           )}
         </div>
+
+        {/* File info + Data Preview — always visible outside accordion */}
+        {fileInfo && (
+          <div style={{ marginTop: 16, display: 'flex', alignItems: 'center', gap: 12, fontSize: 12, color: '#6b7280' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '4px 10px',
+              borderRadius: 99, background: '#e0e7ff', color: '#4338ca', fontWeight: 500 }}>
+              {fileInfo.type === 'JSON' ? <FileJson size={14} /> : <FileText size={14} />}{fileInfo.type}
+            </span>
+            <span>{fileInfo.name}</span><span>&bull;</span>
+            <span>{allRows.length.toLocaleString(locale)} {t('rows')} &times; {headers.length} {t('columns')}</span>
+          </div>
+        )}
+
+        {allRows.length > 0 && (
+          <div style={{ marginTop: 16 }}>
+            <h2 style={{ fontSize: 13, fontWeight: 600, color: '#4b5563', marginBottom: 8,
+              display: 'flex', alignItems: 'center', gap: 6 }}>
+              <FileText size={16} />{t('dataPreviewTitle')}
+            </h2>
+            <DataTable headers={headers} rows={allRows} isArrayRows={false}
+              onEditRow={(info) => setEditModal(info)}
+              onDeleteRow={(idx) => handleRowDelete(idx)} />
+          </div>
+        )}
 
         {/* Analysis input */}
         {headers.length > 0 && (
