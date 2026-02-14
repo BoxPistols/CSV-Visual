@@ -39,8 +39,14 @@ class LocalStorageAdapter {
   async create({ name, description = '', fileType, headers, rows }) {
     const all = this._readAll();
     const dataset = {
-      id: genId(), name, description, fileType, headers, rows,
-      createdAt: now(), updatedAt: now(),
+      id: genId(),
+      name,
+      description,
+      fileType,
+      headers,
+      rows,
+      createdAt: now(),
+      updatedAt: now(),
     };
     all.push(dataset);
     this._writeAll(all);
@@ -61,7 +67,9 @@ class LocalStorageAdapter {
     this._writeAll(all);
   }
 
-  async updateRows(id, rows) { return this.update(id, { rows }); }
+  async updateRows(id, rows) {
+    return this.update(id, { rows });
+  }
 
   async addRow(id, row) {
     const ds = await this.getById(id);
@@ -89,13 +97,9 @@ class LocalStorageAdapter {
     if (!ds) throw new Error(`Dataset not found: ${id}`);
     const escape = (v) => {
       const s = String(v ?? '');
-      return s.includes(',') || s.includes('"') || s.includes('\n')
-        ? `"${s.replace(/"/g, '""')}"` : s;
+      return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s.replace(/"/g, '""')}"` : s;
     };
-    return [
-      ds.headers.join(','),
-      ...ds.rows.map((r) => ds.headers.map((h) => escape(r[h])).join(',')),
-    ].join('\n');
+    return [ds.headers.join(','), ...ds.rows.map((r) => ds.headers.map((h) => escape(r[h])).join(','))].join('\n');
   }
 
   async exportJson(id) {

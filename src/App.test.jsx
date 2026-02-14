@@ -5,9 +5,9 @@ import App from './App';
 // ── Utility function tests (replicate module-scoped helpers) ──
 
 const flattenJson = (json) => {
-  let a = Array.isArray(json) ? json : (json.data || json.results || json.items || json.records || [json]);
+  let a = Array.isArray(json) ? json : json.data || json.results || json.items || json.records || [json];
   if (!Array.isArray(a)) a = [a];
-  return a.map(item => {
+  return a.map((item) => {
     const row = {};
     const walk = (o, p) => {
       for (const [k, v] of Object.entries(o || {})) {
@@ -16,26 +16,38 @@ const flattenJson = (json) => {
         else row[key] = Array.isArray(v) ? v.join(', ') : v;
       }
     };
-    walk(item, ''); return row;
+    walk(item, '');
+    return row;
   });
 };
 
 const rowsToCsv = (rows, headers) => {
   if (!rows.length) return '';
-  const h = headers || [...new Set(rows.flatMap(r => Object.keys(r)))];
-  return [h.join(','), ...rows.map(r => h.map(k => {
-    const s = String(r[k] ?? '');
-    return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s.replace(/"/g, '""')}"` : s;
-  }).join(','))].join('\n');
+  const h = headers || [...new Set(rows.flatMap((r) => Object.keys(r)))];
+  return [
+    h.join(','),
+    ...rows.map((r) =>
+      h
+        .map((k) => {
+          const s = String(r[k] ?? '');
+          return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s.replace(/"/g, '""')}"` : s;
+        })
+        .join(','),
+    ),
+  ].join('\n');
 };
 
 const parseCsv = (text) => {
   const lines = text.trim().split('\n');
-  const h = lines[0].split(',').map(s => s.trim().replace(/^"|"$/g, ''));
+  const h = lines[0].split(',').map((s) => s.trim().replace(/^"|"$/g, ''));
   const rows = [];
   for (let i = 1; i < lines.length; i++) {
-    const v = lines[i].split(',').map(s => s.trim().replace(/^"|"$/g, ''));
-    const row = {}; h.forEach((k, j) => { row[k] = v[j] || ''; }); rows.push(row);
+    const v = lines[i].split(',').map((s) => s.trim().replace(/^"|"$/g, ''));
+    const row = {};
+    h.forEach((k, j) => {
+      row[k] = v[j] || '';
+    });
+    rows.push(row);
   }
   return { h, rows };
 };
@@ -43,7 +55,11 @@ const parseCsv = (text) => {
 const IMG_EXT_RE = /\.(jpe?g|png|gif|webp|svg|bmp|ico|avif)(\?.*)?$/i;
 const IMG_HOST_RE = /pbs\.twimg\.com|instagram\..+\/p\/|i\.imgur\.com|images\.unsplash\.com|cdn\.discordapp\.com/;
 function isImageUrl(url) {
-  try { return IMG_EXT_RE.test(url) || IMG_HOST_RE.test(url); } catch { return false; }
+  try {
+    return IMG_EXT_RE.test(url) || IMG_HOST_RE.test(url);
+  } catch {
+    return false;
+  }
 }
 
 describe('flattenJson', () => {
@@ -79,7 +95,10 @@ describe('rowsToCsv', () => {
   });
 
   it('converts rows to CSV string', () => {
-    const rows = [{ a: '1', b: '2' }, { a: '3', b: '4' }];
+    const rows = [
+      { a: '1', b: '2' },
+      { a: '3', b: '4' },
+    ];
     const csv = rowsToCsv(rows, ['a', 'b']);
     expect(csv).toBe('a,b\n1,2\n3,4');
   });

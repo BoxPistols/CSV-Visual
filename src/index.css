@@ -1,3 +1,123 @@
+/* ── Theme Variables ── */
+:root {
+  /* Backgrounds */
+  --bg-page: #f8fafc;
+  --bg-page-accent: #eef2ff;
+  --bg-primary: #fff;
+  --bg-secondary: #f9fafb;
+  --bg-tertiary: #fafafa;
+  --bg-hover: #eef2ff;
+  --bg-input: #fff;
+  --bg-badge: #f3f4f6;
+  --bg-filter-badge: #f0f0ff;
+  --bg-accent-light: #e0e7ff;
+  /* Borders */
+  --border-primary: #e5e7eb;
+  --border-secondary: #d1d5db;
+  --border-subtle: #f3f4f6;
+  --border-accent: #6366f1;
+  --border-resize: #a5b4fc;
+  /* Text */
+  --text-heading: #1f2937;
+  --text-primary: #374151;
+  --text-secondary: #4b5563;
+  --text-tertiary: #6b7280;
+  --text-muted: #9ca3af;
+  --text-on-accent: #fff;
+  --text-accent-dark: #4338ca;
+  /* Accent / Brand */
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --link: #4f46e5;
+  /* Semantic */
+  --error-bg: #fef2f2;
+  --error-border: #fecaca;
+  --error-text: #b91c1c;
+  --error-accent: #dc2626;
+  --success: #16a34a;
+  --success-border: #bbf7d0;
+  /* Shadow / Overlay */
+  --shadow: rgba(0, 0, 0, 0.1);
+  --shadow-heavy: rgba(0, 0, 0, 0.15);
+  --overlay: rgba(0, 0, 0, 0.3);
+}
+
+[data-theme='dark'] {
+  --bg-page: #0f172a;
+  --bg-page-accent: #1e1b4b;
+  --bg-primary: #1e293b;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #253348;
+  --bg-hover: #312e81;
+  --bg-input: #1e293b;
+  --bg-badge: #334155;
+  --bg-filter-badge: #312e81;
+  --bg-accent-light: #312e81;
+  --border-primary: #334155;
+  --border-secondary: #475569;
+  --border-subtle: #2d3a4d;
+  --border-accent: #818cf8;
+  --border-resize: #6366f1;
+  --text-heading: #f1f5f9;
+  --text-primary: #e2e8f0;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --text-muted: #64748b;
+  --text-on-accent: #fff;
+  --text-accent-dark: #c7d2fe;
+  --accent: #818cf8;
+  --accent-hover: #a5b4fc;
+  --link: #a5b4fc;
+  --error-bg: #450a0a;
+  --error-border: #7f1d1d;
+  --error-text: #fca5a5;
+  --error-accent: #ef4444;
+  --success: #4ade80;
+  --success-border: #166534;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --shadow-heavy: rgba(0, 0, 0, 0.5);
+  --overlay: rgba(0, 0, 0, 0.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg-page: #0f172a;
+    --bg-page-accent: #1e1b4b;
+    --bg-primary: #1e293b;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #253348;
+    --bg-hover: #312e81;
+    --bg-input: #1e293b;
+    --bg-badge: #334155;
+    --bg-filter-badge: #312e81;
+    --bg-accent-light: #312e81;
+    --border-primary: #334155;
+    --border-secondary: #475569;
+    --border-subtle: #2d3a4d;
+    --border-accent: #818cf8;
+    --border-resize: #6366f1;
+    --text-heading: #f1f5f9;
+    --text-primary: #e2e8f0;
+    --text-secondary: #cbd5e1;
+    --text-tertiary: #94a3b8;
+    --text-muted: #64748b;
+    --text-on-accent: #fff;
+    --text-accent-dark: #c7d2fe;
+    --accent: #818cf8;
+    --accent-hover: #a5b4fc;
+    --link: #a5b4fc;
+    --error-bg: #450a0a;
+    --error-border: #7f1d1d;
+    --error-text: #fca5a5;
+    --error-accent: #ef4444;
+    --success: #4ade80;
+    --success-border: #166534;
+    --shadow: rgba(0, 0, 0, 0.3);
+    --shadow-heavy: rgba(0, 0, 0, 0.5);
+    --overlay: rgba(0, 0, 0, 0.5);
+  }
+}
+
 /* Reset & Base */
 *,
 *::before,
@@ -8,18 +128,22 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Kaku Gothic ProN',
-    'Hiragino Sans', Meiryo, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #1f2937;
-  background: #f8fafc;
+  color: var(--text-heading);
+  background: var(--bg-page);
 }
 
 /* Lucide animate-spin */
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 .animate-spin {
   animation: spin 1s linear infinite;

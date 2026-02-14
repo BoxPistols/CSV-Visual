@@ -18,40 +18,28 @@ describe('DatasetManager', () => {
           fileInfo={{ name: 'test.csv', type: 'CSV' }}
           onLoad={noop}
           onRowAdd={noop}
-        />
+        />,
       );
       const buttons = screen.getAllByRole('button');
-      const saveBtn = buttons.find(b => b.textContent.match(/save to library|ライブラリに保存/i));
+      const saveBtn = buttons.find((b) => b.textContent.match(/save to library|ライブラリに保存/i));
       expect(saveBtn).toBeTruthy();
     });
 
     it('does not show save button when no data', () => {
       const { container } = render(
-        <DatasetManager
-          headers={[]}
-          rows={[]}
-          fileInfo={null}
-          onLoad={noop}
-          onRowAdd={noop}
-        />
+        <DatasetManager headers={[]} rows={[]} fileInfo={null} onLoad={noop} onRowAdd={noop} />,
       );
       const buttons = container.querySelectorAll('button');
-      const saveBtn = Array.from(buttons).find(b => b.textContent.match(/save to library|ライブラリに保存/i));
+      const saveBtn = Array.from(buttons).find((b) => b.textContent.match(/save to library|ライブラリに保存/i));
       expect(saveBtn).toBeUndefined();
     });
 
     it('does not show save button when headers exist but rows are empty', () => {
       const { container } = render(
-        <DatasetManager
-          headers={['a']}
-          rows={[]}
-          fileInfo={null}
-          onLoad={noop}
-          onRowAdd={noop}
-        />
+        <DatasetManager headers={['a']} rows={[]} fileInfo={null} onLoad={noop} onRowAdd={noop} />,
       );
       const buttons = container.querySelectorAll('button');
-      const saveBtn = Array.from(buttons).find(b => b.textContent.match(/save to library|ライブラリに保存/i));
+      const saveBtn = Array.from(buttons).find((b) => b.textContent.match(/save to library|ライブラリに保存/i));
       expect(saveBtn).toBeUndefined();
     });
   });
@@ -65,11 +53,11 @@ describe('DatasetManager', () => {
           fileInfo={{ name: 'data.csv', type: 'CSV' }}
           onLoad={noop}
           onRowAdd={noop}
-        />
+        />,
       );
 
       const buttons = screen.getAllByRole('button');
-      const saveBtn = buttons.find(b => b.textContent.match(/save to library|ライブラリに保存/i));
+      const saveBtn = buttons.find((b) => b.textContent.match(/save to library|ライブラリに保存/i));
       fireEvent.click(saveBtn);
 
       const nameInput = document.querySelector('input[placeholder]');
@@ -84,21 +72,23 @@ describe('DatasetManager', () => {
           fileInfo={{ name: 'data.csv', type: 'CSV' }}
           onLoad={noop}
           onRowAdd={noop}
-        />
+        />,
       );
 
       const buttons = screen.getAllByRole('button');
-      const saveBtn = buttons.find(b => b.textContent.match(/save to library|ライブラリに保存/i));
+      const saveBtn = buttons.find((b) => b.textContent.match(/save to library|ライブラリに保存/i));
       fireEvent.click(saveBtn);
 
       const nameInput = document.querySelector('input[placeholder]');
       expect(nameInput).toBeInTheDocument();
 
       const allBtns = screen.getAllByRole('button');
-      const cancelBtn = allBtns.find(b => b.textContent.match(/cancel|キャンセル/i));
+      const cancelBtn = allBtns.find((b) => b.textContent.match(/cancel|キャンセル/i));
       fireEvent.click(cancelBtn);
 
-      const saveBtnAfter = screen.getAllByRole('button').find(b => b.textContent.match(/save to library|ライブラリに保存/i));
+      const saveBtnAfter = screen
+        .getAllByRole('button')
+        .find((b) => b.textContent.match(/save to library|ライブラリに保存/i));
       expect(saveBtnAfter).toBeTruthy();
     });
   });
@@ -106,13 +96,7 @@ describe('DatasetManager', () => {
   describe('saved datasets accordion', () => {
     it('renders a details element for saved datasets', () => {
       const { container } = render(
-        <DatasetManager
-          headers={[]}
-          rows={[]}
-          fileInfo={null}
-          onLoad={noop}
-          onRowAdd={noop}
-        />
+        <DatasetManager headers={[]} rows={[]} fileInfo={null} onLoad={noop} onRowAdd={noop} />,
       );
       const details = container.querySelector('details');
       expect(details).toBeInTheDocument();
@@ -123,13 +107,7 @@ describe('DatasetManager', () => {
 
     it('shows empty state inside details when no datasets saved', async () => {
       const { container } = render(
-        <DatasetManager
-          headers={[]}
-          rows={[]}
-          fileInfo={null}
-          onLoad={noop}
-          onRowAdd={noop}
-        />
+        <DatasetManager headers={[]} rows={[]} fileInfo={null} onLoad={noop} onRowAdd={noop} />,
       );
       // DatasetList is always mounted inside <details>
       // Initial state has empty datasets, so empty message shows immediately
