@@ -13,7 +13,7 @@ export default defineConfig(({ mode }) => {
         '/api/messages': {
           target: 'https://api.anthropic.com',
           changeOrigin: true,
-          rewrite: (path) => '/v1/messages',
+          rewrite: () => '/v1/messages',
           configure: (proxy) => {
             proxy.on('proxyReq', (proxyReq) => {
               proxyReq.setHeader('x-api-key', env.VITE_ANTHROPIC_API_KEY);
