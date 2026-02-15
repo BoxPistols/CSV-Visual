@@ -69,9 +69,14 @@ function ProviderKeyRow({ provider }) {
     if (!key) return;
     setTesting(true);
     setTestResult(null);
-    const result = await testConnection(provider.id, key);
-    setTestResult(result);
-    setTesting(false);
+    try {
+      const result = await testConnection(provider.id, key);
+      setTestResult(result);
+    } catch {
+      setTestResult({ ok: false });
+    } finally {
+      setTesting(false);
+    }
   };
 
   return (
