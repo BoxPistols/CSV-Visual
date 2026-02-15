@@ -35,6 +35,8 @@ import {
   Moon,
   Sun,
   Monitor,
+  AArrowUp,
+  AArrowDown,
 } from 'lucide-react';
 import DatasetManager from './components/DatasetManager';
 import SettingsPanel from './components/SettingsPanel';
@@ -68,6 +70,10 @@ const AI_PROVIDERS = {
 /* ── Theme Cycle ── */
 const THEME_CYCLE = ['auto', 'dark', 'light'];
 const THEME_ICON = { auto: Monitor, dark: Moon, light: Sun };
+
+/* ── Font Size ── */
+const FONT_SIZES = ['s', 'm', 'l'];
+const FONT_LABELS = { s: 'S', m: 'M', l: 'L' };
 
 /* ── i18n ── */
 const TR = {
@@ -121,6 +127,10 @@ const TR = {
     themeAuto: 'Auto',
     themeLight: 'Light',
     themeDark: 'Dark',
+    fontSizeSmall: 'Small',
+    fontSizeMedium: 'Medium',
+    fontSizeLarge: 'Large',
+    fontSize: 'Font size',
   },
   'ja-JP': {
     pageTitle: 'CSV / JSON \u30c7\u30fc\u30bf\u30d3\u30b8\u30e5\u30a2\u30e9\u30a4\u30b6\u30fc',
@@ -176,6 +186,10 @@ const TR = {
     themeAuto: '\u81ea\u52d5',
     themeLight: '\u30e9\u30a4\u30c8',
     themeDark: '\u30c0\u30fc\u30af',
+    fontSizeSmall: '\u5c0f',
+    fontSizeMedium: '\u4e2d',
+    fontSizeLarge: '\u5927',
+    fontSize: '\u6587\u5b57\u30b5\u30a4\u30ba',
   },
 };
 const bLoc = navigator.languages?.[0] || navigator.language || 'en-US';
@@ -1278,6 +1292,7 @@ export default function App() {
   const [dataOpen, setDataOpen] = useState(true);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [theme, setTheme] = useState(globalState.theme || 'auto');
+  const [fontScale, setFontScale] = useState(globalState.fontScale || 'm');
 
   // AI provider state - restored from localStorage
   const [provider, setProvider] = useState(globalState.provider || 'openai');
@@ -1315,12 +1330,31 @@ export default function App() {
     setGlobalState({ theme });
   }, [theme]);
 
+  // Font scale: apply data-font attribute
+  useEffect(() => {
+    if (fontScale === 'm') {
+      delete document.documentElement.dataset.font;
+    } else {
+      document.documentElement.dataset.font = fontScale;
+    }
+    setGlobalState({ fontScale });
+  }, [fontScale]);
+
   const cycleTheme = () => {
     const idx = THEME_CYCLE.indexOf(theme);
     setTheme(THEME_CYCLE[(idx + 1) % THEME_CYCLE.length]);
   };
   const ThemeIcon = THEME_ICON[theme];
   const themeLabel = t(theme === 'auto' ? 'themeAuto' : theme === 'dark' ? 'themeDark' : 'themeLight');
+
+  const cycleFontSize = () => {
+    const idx = FONT_SIZES.indexOf(fontScale);
+    setFontScale(FONT_SIZES[(idx + 1) % FONT_SIZES.length]);
+  };
+  const fontLabel =
+    t('fontSize') +
+    ': ' +
+    t(fontScale === 's' ? 'fontSizeSmall' : fontScale === 'l' ? 'fontSizeLarge' : 'fontSizeMedium');
 
   const handleProviderChange = (newProvider) => {
     setProvider(newProvider);
@@ -1589,6 +1623,30 @@ export default function App() {
               }}
             >
               {wideMode ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
+            </button>
+            <button
+              onClick={cycleFontSize}
+              title={fontLabel}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                minWidth: 32,
+                height: 32,
+                borderRadius: 6,
+                border: '1px solid var(--border-secondary)',
+                background: fontScale !== 'm' ? 'var(--bg-hover)' : 'var(--bg-primary)',
+                cursor: 'pointer',
+                color: 'var(--accent)',
+                transition: 'background 0.15s',
+                fontSize: 11,
+                fontWeight: 700,
+                gap: 2,
+                padding: '0 6px',
+              }}
+            >
+              {fontScale === 's' ? <AArrowDown size={16} /> : fontScale === 'l' ? <AArrowUp size={16} /> : 'A'}
+              <span style={{ fontSize: 9 }}>{FONT_LABELS[fontScale]}</span>
             </button>
             <button
               onClick={cycleTheme}

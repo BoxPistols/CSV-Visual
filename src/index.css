@@ -40,6 +40,17 @@
   --shadow: rgba(0, 0, 0, 0.1);
   --shadow-heavy: rgba(0, 0, 0, 0.15);
   --overlay: rgba(0, 0, 0, 0.3);
+  /* Font Scale */
+  --font-scale: 1;
+}
+
+[data-font='s'] {
+  --font-scale: 0.9;
+  zoom: 0.9;
+}
+[data-font='l'] {
+  --font-scale: 1.1;
+  zoom: 1.1;
 }
 
 [data-theme='dark'] {
